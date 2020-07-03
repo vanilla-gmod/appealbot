@@ -59,6 +59,16 @@ function dbConnect() {
 			console.log("[MYSQL] Connected to panel database!")
 		}
 	})
+
+	forumDb.on('error', function(err) {
+		console.log("[MYSQL] Error!")
+		console.log(err)
+	});
+
+	panelDb.on('error', function(err) {
+		console.log("[MYSQL] Error!")
+		console.log(err)
+	});
 }
 
 
@@ -73,17 +83,23 @@ function getBanAppeals() {
 }
 
 function checkBanAppeal(title, threadid, data, userid) {
+	getUserSteamID(userid, function() {
+		console.log("cback")
+	})
 	forum.getThread({id: threadid}, "", function(z, x, c) {
 		forum.getMessage({id: c.thread.first_post_id}, "", function(error, msg, body) {
 			var msg = body.post.message
-			console.log("----------")
-			console.log(msg)
+			//console.log("----------")
+			//console.log(msg)
 		})
 	})
 }
 
-function getUserSteamID(userid) {
-
+function getUserSteamID(userid, callback) {
+	forumDb.query("SELECT `provider_key` FROM `xf_user_connected_account` WHERE `provider` = 'steam' AND `user_id` = " + userid, function(err, result) {
+		console.log(result)
+		callback()
+	})
 }
 
 function getBanOnUser(steamid) {
@@ -103,18 +119,22 @@ function setThreadData(threadid, value) {
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const main = async () => {
-  if ((forumDb & panelDb) & (forumDb.state == "connected" & panelDb.state == "connected")) {
+	if ((forumDb === undefined || panelDb === undefined) || (forumDb.state == "disconnected" & panelDb.state == "disconnected")) {
+		if (forumDb !== undefined) {
+		console.log(forumDb.state)
+		console.log(panelDb.state)
+		}
 
-  } 
-  else {
+		console.log("Trying to connect to the databases...")
+		dbConnect()
+		await snooze(5000)
+	} 
+	else {
+		getBanAppeals()
+	} 
 
-  	console.log("Trying to connect to the databases...")
-  	dbConnect()
-  	await snooze(5000)
-  } 
-
-  await snooze(2000)
-  main()
+	await snooze(2000)
+	main()
 };
 
 main()
