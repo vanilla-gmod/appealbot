@@ -1,0 +1,12 @@
+{
+  "name": "Appeals Supervisor Bot",
+  "version": "1.0.0",
+  "description": "epic",
+  "main": "bot.js",
+  "author": "vin",
+  "license": "ISC",
+  "dependencies": {
+    "api-wrapper": "^1.1.0",
+    "mysql": "^2.18.1"
+  }
+}
