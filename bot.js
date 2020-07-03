@@ -100,10 +100,12 @@ function setThreadData(threadid, value) {
 	})
 }
 
-console.log("hi")
 dbConnect()
 getBanAppeals()
 
-while (true) {
 
+async function main() {
+	console.log("tick")
+	await sleep(1)
+	main()
 }
