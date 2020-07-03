@@ -100,14 +100,18 @@ function setThreadData(threadid, value) {
 	})
 }
 
-dbConnect()
-getBanAppeals()
-
-
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const main = async () => {
-  
+  if ((forumDb & panelDb) & (forumDb.state == "connected" & panelDb.state == "connected")) {
+
+  } 
+  else {
+
+  	console.log("Trying to connect to the databases...")
+  	dbConnect()
+  	await snooze(5000)
+  } 
 
   await snooze(2000)
   main()
