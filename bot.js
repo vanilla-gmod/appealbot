@@ -31,14 +31,14 @@ function dbConnect() {
 	forumDb = mysql.createConnection({
 		host: auth.db_ip,
 		user: auth.forum_user,
-		password: auth.forum_password,
+		password: auth.forum_pass,
 		database: auth.forum_db
 	})
 
 	panelDb = mysql.createConnection({
 		host: auth.db_ip,
 		user: auth.panel_user,
-		password: auth.panel_password,
+		password: auth.panel_pass,
 		database: auth.panel_db
 	})
 
@@ -108,7 +108,7 @@ const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const main = async () => {
   
-  
+
   await snooze(2000)
   main()
 };
