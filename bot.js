@@ -104,10 +104,13 @@ dbConnect()
 getBanAppeals()
 
 
-async function main() {
-	console.log("tick")
-	await sleep(1)
-	main()
-}
+const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const main = async () => {
+  
+  
+  await snooze(2000)
+  main()
+};
 
 main()
