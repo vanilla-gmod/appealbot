@@ -100,9 +100,10 @@ function setThreadData(threadid, value) {
 	})
 }
 
+console.log("hi")
 dbConnect()
 getBanAppeals()
 
 while (true) {
-	
+
 }
