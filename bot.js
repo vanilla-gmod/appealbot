@@ -109,3 +109,5 @@ async function main() {
 	await sleep(1)
 	main()
 }
+
+main()
