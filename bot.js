@@ -1,3 +1,5 @@
+// this code was just put together quickly and is pretty messy, you've been warned
+
 wrapper = require("api-wrapper")
 mysql = require("mysql")
 auth = require("./auth.json")
@@ -100,3 +102,7 @@ function setThreadData(threadid, value) {
 
 dbConnect()
 getBanAppeals()
+
+while (true) {
+	
+}
