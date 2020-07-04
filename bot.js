@@ -19,7 +19,8 @@ forum = wrapper.create({
 	},
 	post: {
 		postMessage: "posts/?thread_id|message",
-		updateThread: "threads/${id}/?prefix_id|title|discussion_open|sticky|custom_fields|add_tags|remove_tags"
+		updateThread: "threads/${id}/?prefix_id|title|discussion_open|sticky|custom_fields|add_tags|remove_tags",
+		setThreadTag: "threads/${id}/?custom_fields[${tag_name}]=${tag_value}"
 	}
 })
 
@@ -47,7 +48,7 @@ function dbConnect() {
 			console.log("[MYSQL] " + err)
 		} 
 		else {
-			console.log("[MYSQL] Connected to forum datbase!")
+			console.log("[MYSQL] Connected to forum database!")
 		}
 	})
 
@@ -75,17 +76,43 @@ function dbConnect() {
 function getBanAppeals() {
 	forum.getForum({id: 10}, "", function(error, message, body) {
 		body.threads.forEach(function(val) {
-			if (val.title.toLowerCase().includes("ban appeal")) {
-				checkBanAppeal(val.title, val.thread_id, val.custom_fields, val.userid)
+			if (val.prefix_id == 0 & val.title.toLowerCase().includes("ban appeal")) {
+				checkBanAppeal(val.title, val.thread_id, val.custom_fields, val.user_id)
 			}
 		})
 	})
 }
 
 function checkBanAppeal(title, threadid, data, userid) {
-	getUserSteamID(userid, function() {
-		console.log("cback")
+	getUserSteamID(userid, function(steamid) {
+		getBanOnUser(steamid, function(banInfo) {
+			getForumUserBySteamID(banInfo.steamid64_admin, function(gotIt, adminUID) {
+				console.log("Found new appeal from "+steamid+" ("+userid+") for ban #"+banInfo.id)
+				forum.updateThread({id: threadid, prefix_id: "7"}, "", function() {})
+
+				var unbanDate = new Date(banInfo.date_banned.getTime() + (60 * (1000 * banInfo.length)))
+
+				p = "[B]Ban Information[/B]\n[LIST]"
+				p = p + "\n[*][B]ID - [/B]#" + banInfo.id.toString()
+				p = p + "\n[*][B]Reason - [/B]" + banInfo.reason
+				p = p + "\n[*][B]Expiry - [/B]" + unbanDate.toString()
+				p = p + "\n[*][B]User - [/B][URL='https://panel.impulse-community.com/index.php?t=user&id=" + steamid + "']" + steamid + "[/URL]"
+
+				if (gotIt == true) {
+					p = p + "\n[*][B]Moderator - [/B][USER=" + adminUID + "]" + banInfo.steamid64_admin + "[/USER]"
+				}
+				else {
+					p = p + "\n[*][B]Moderator - [/B]" + banInfo.steamid64_admin
+				}
+
+				p = p + "\n[/LIST]"
+				p = escape(p)
+
+				forum.postMessage({thread_id: threadid, message: p}, "", function() {})
+			})
+		})
 	})
+
 	forum.getThread({id: threadid}, "", function(z, x, c) {
 		forum.getMessage({id: c.thread.first_post_id}, "", function(error, msg, body) {
 			var msg = body.post.message
@@ -96,14 +123,36 @@ function checkBanAppeal(title, threadid, data, userid) {
 }
 
 function getUserSteamID(userid, callback) {
-	forumDb.query("SELECT `provider_key` FROM `xf_user_connected_account` WHERE `provider` = 'steam' AND `user_id` = " + userid, function(err, result) {
-		console.log(result)
-		callback()
+	forumDb.query("SELECT provider_key FROM xf_user_connected_account WHERE provider = 'steam' AND user_id = '" + userid + "'", function(err, result) {
+		if (err) throw err
+
+		if (result.length > 0) {
+			callback(result[0].provider_key.toString())
+		}
 	})
 }
 
-function getBanOnUser(steamid) {
+function getForumUserBySteamID(steamid, callback) {
+	forumDb.query("SELECT user_id FROM xf_user_connected_account WHERE provider = 'steam' AND provider_key = '" + steamid + "'", function(err, result) {
+		if (err) throw err
 
+		if (result.length > 0) {
+			callback(true, result[0].user_id)
+		}
+		else {
+			callback(false)
+		}
+	})
+}
+
+function getBanOnUser(steamid, callback) {
+	panelDb.query("SELECT id, date_banned, length, reason, steamid64_admin FROM gex_bans WHERE steamid64 = '" + steamid + "' AND status = '0' AND DATE_ADD(date_banned, INTERVAL length minute) > CURRENT_TIMESTAMP()", function(err, result) {
+		if (err) throw err
+
+		if (result.length > 0) {
+			callback(result[0])
+		}
+	})
 }
 
 function threadSetTitle(threadid, xTitle) {
@@ -111,8 +160,8 @@ function threadSetTitle(threadid, xTitle) {
 }
 
 function setThreadData(threadid, value) {
-	forum.updateThread({custom_fields: {value: "true"}}, "", function(error, msg, body) {
-		console.log(body)
+	forum.updateThread({custom_fields: value}, "", function(error, msg, body) {
+		//console.log(body)
 	})
 }
 
@@ -120,11 +169,6 @@ const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const main = async () => {
 	if ((forumDb === undefined || panelDb === undefined) || (forumDb.state == "disconnected" & panelDb.state == "disconnected")) {
-		if (forumDb !== undefined) {
-		console.log(forumDb.state)
-		console.log(panelDb.state)
-		}
-
 		console.log("Trying to connect to the databases...")
 		dbConnect()
 		await snooze(5000)
@@ -133,7 +177,7 @@ const main = async () => {
 		getBanAppeals()
 	} 
 
-	await snooze(2000)
+	await snooze(5000)
 	main()
 };
 
