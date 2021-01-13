@@ -140,7 +140,7 @@ function checkBanAppeal(title, threadid, data, userid) {
 						p = p + "\n[/LIST]"
 
 						if (isIAC == true) {
-							p = p + `\n[TABLE]
+							p = p + `\n\n[TABLE]
 							[TR]
 							[TD][B][SIZE=5][COLOR=rgb(226, 80, 65)]This ban was issued by IAC (impulse anti-cheat)
 							IAC bans are permanent, non-negotiable and cannot be removed by appeal.[/COLOR][/SIZE][/B]
