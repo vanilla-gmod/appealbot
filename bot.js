@@ -113,6 +113,7 @@ function checkBanAppeal(title, threadid, data, userid) {
 						forum.updateThread({id: threadid, prefix_id: "7", title: title + " - " + steamid}, "", function() {})
 
 						var unbanDate = new Date(banInfo.date_banned.getTime() + (60 * (1000 * banInfo.length)))
+						var isIAC = false
 
 						p = "[B]Ban Information[/B]\n[LIST]"
 						p = p + "\n[*][B]ID - [/B]#" + banInfo.id.toString()
@@ -131,10 +132,31 @@ function checkBanAppeal(title, threadid, data, userid) {
 							p = p + "\n[*][B]Moderator - [/B][USER=" + adminUID + "]" + banInfo.steamid64_admin + "[/USER]"
 						}
 						else {
-							p = p + "\n[*][B]Moderator - [/B]" + banInfo.steamid64_admin
+							if (banInfo.steamid64_admin != "0") {
+								p = p + "\n[*][B]Moderator - [/B]" + banInfo.steamid64_admin
+							}
 						}
 
 						p = p + "\n[/LIST]"
+
+						if (isIAC == true) {
+							p = p + `\n[TABLE]
+							[TR]
+							[TD][B][SIZE=5][COLOR=rgb(226, 80, 65)]This ban was issued by IAC (impulse anti-cheat)
+							IAC bans are permanent, non-negotiable and cannot be removed by appeal.[/COLOR][/SIZE][/B]
+							[SIZE=3]If your IAC ban is determined to have been issued incorrectly, it will automatically be removed.[/SIZE]
+							
+							
+							[B]How does IAC work?:[/B]
+							IAC is an evidence based anti-cheat. It only issues bans when a cheat is detected directly. This means IAC does not conduct analysis, and does not issue false bans unless it is the result of a bug. In those cases the bans are automatically removed. For security purposes the exact methods IAC uses can not be disclosed, however IAC will scan actively for known traces of known cheats. IAC is non-intrusive and does not interfere, or be interfered with by other addons or other programs. Every IAC ban stores a case file containing evidence regarding your ban.
+							
+							[B]Are all IAC punishments permanent?:[/B]
+							One of IAC's many detection methods which is used to prevent server crash exploits can flag false-positives. For this reason, this method will just kick users from the session unless it detects a very high reading. All other methods are completely based on evidence and can not be triggered by accident at all, therefore they all issue full IAC bans when they are triggered.[/TD]
+							[/TR]
+							[/TABLE]`
+
+							forum.updateThread({id: threadid, discussion_open: false}, "", function() {})
+						}
 						p = escape(p)
 
 						forum.postMessage({thread_id: threadid, message: p}, "", function() {})
