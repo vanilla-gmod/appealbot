@@ -110,7 +110,6 @@ function checkBanAppeal(title, threadid, data, userid) {
 						}
 
 						console.log("Found new appeal from "+steamid+" ("+userid+") for ban #"+banInfo.id)
-						forum.updateThread({id: threadid, prefix_id: "7", title: title + " - " + steamid}, "", function() {})
 
 						var unbanDate = new Date(banInfo.date_banned.getTime() + (60 * (1000 * banInfo.length)))
 						var isIAC = false
@@ -157,11 +156,10 @@ function checkBanAppeal(title, threadid, data, userid) {
 							One of IAC's many detection methods which is used to prevent server crash exploits can flag false-positives. For this reason, this method will just kick users from the session unless it detects a very high reading. All other methods are completely based on evidence and can not be triggered by accident at all, therefore they all issue full IAC bans when they are triggered.[/TD]
 							[/TR]
 							[/TABLE]`
-
-							forum.updateThread({id: threadid, discussion_open: false}, "", function() {})
 						}
 						p = escape(p)
 
+						forum.updateThread({id: threadid, prefix_id: "7", title: title + " - " + steamid, discussion_open: !isIAC}, "", function() {})
 						forum.postMessage({thread_id: threadid, message: p}, "", function() {})
 					})
 				})
