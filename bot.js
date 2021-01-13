@@ -135,6 +135,9 @@ function checkBanAppeal(title, threadid, data, userid) {
 							if (banInfo.steamid64_admin != "0") {
 								p = p + "\n[*][B]Moderator - [/B]" + banInfo.steamid64_admin
 							}
+							else {
+								isIAC = true
+							}
 						}
 
 						p = p + "\n[/LIST]"
