@@ -132,7 +132,6 @@ function checkBanAppeal(title, threadid, data, userid) {
 							p = p + "\n[*][B]Moderator - [/B][USER=" + adminUID + "]" + banInfo.steamid64_admin + "[/USER]"
 						}
 						else {
-							console.log("bruh")
 							if (banInfo.steamid64_admin != "0") {
 								p = p + "\n[*][B]Moderator - [/B]" + banInfo.steamid64_admin
 							}
