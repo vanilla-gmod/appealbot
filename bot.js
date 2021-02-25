@@ -27,6 +27,7 @@ forum = wrapper.create({
 
 forumDb = undefined
 panelDb = undefined
+appealCache = []
 
 function dbConnect() {
 	forumDb = mysql.createConnection({
@@ -92,7 +93,8 @@ function dbConnect() {
 function getBanAppeals() {
 	forum.getForum({id: 10}, "", function(error, message, body) {
 		body.threads.forEach(function(val) {
-			if (val.prefix_id == 0 & val.title.toLowerCase().includes("ban appeal")) {
+			if (val.prefix_id == 0 & val.title.toLowerCase().includes("ban appeal") & appealCache.includes(val.thread_id) == false) {
+				appealCache.push(val.thread_id)
 				checkBanAppeal(val.title, val.thread_id, val.custom_fields, val.user_id)
 			}
 		})
