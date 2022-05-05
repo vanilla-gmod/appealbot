@@ -186,9 +186,7 @@ function threadSetTitle(threadid, xTitle) {
 }
 
 function setThreadData(threadid, value) {
-  forum.updateThread({ custom_fields: value }, '', function (error, msg, body) {
-    //console.log(body)
-  });
+  forum.updateThread({ id: threadid, custom_fields: value }, function () {});
 }
 
 const snooze = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
