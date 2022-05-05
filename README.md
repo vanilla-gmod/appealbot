@@ -11,6 +11,7 @@ Instructions:
 
 ```
 {
+    "xf_token": "",
     "db_ip": "",
     "db_forum_user": "",
     "db_forum_pass": "",
