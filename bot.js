@@ -30,14 +30,14 @@ panelDb = undefined
 appealCache = []
 
 function dbConnect() {
-	forumDb = mysql.createConnection({
+	let forumDb = mysql.createConnection({
 		host: auth.db_ip,
 		user: auth.forum_user,
 		password: auth.forum_pass,
 		database: auth.forum_db
 	})
 
-	panelDb = mysql.createConnection({
+	let panelDb = mysql.createConnection({
 		host: auth.db_ip,
 		user: auth.panel_user,
 		password: auth.panel_pass,
@@ -69,8 +69,9 @@ function dbConnect() {
 		console.log(err)
 
 		if (err.code === "PROTOCOL_CONNECTION_LOST") {
-			//dbConnect()
-		} 
+			console.log("[MYSQL] Reconnecting...")
+			dbConnect()
+		}
 		else {
 			throw err
 		}
@@ -81,6 +82,7 @@ function dbConnect() {
 		console.log(err)
 
 		if (err.code === "PROTOCOL_CONNECTION_LOST") {
+			console.log("[MYSQL] Reconnecting...")
 			dbConnect()
 		} 
 		else {
@@ -93,7 +95,7 @@ function dbConnect() {
 function getBanAppeals() {
 	forum.getForum({id: 10}, "", function(error, message, body) {
 		body.threads.forEach(function(val) {
-			if (val.prefix_id == 0 & val.title.toLowerCase().includes("ban appeal") & appealCache.includes(val.thread_id) == false) {
+			if (val.prefix_id === 0 & val.title.toLowerCase().includes("ban appeal") && appealCache.includes(val.thread_id) === false) {
 				appealCache.push(val.thread_id)
 				checkBanAppeal(val.title, val.thread_id, val.custom_fields, val.user_id)
 			}
@@ -113,55 +115,35 @@ function checkBanAppeal(title, threadid, data, userid) {
 
 						console.log("Found new appeal from "+steamid+" ("+userid+") for ban #"+banInfo.id)
 
-						var unbanDate = new Date(banInfo.date_banned.getTime() + (60 * (1000 * banInfo.length)))
-						var isIAC = false
+						const unbanDate = new Date(banInfo.date_banned.getTime() + (60 * (1000 * banInfo.length)));
+						const xenforoURL = "https://willard.networks/forums/";
 
 						p = "[B]Ban Information[/B]\n[LIST]"
 						p = p + "\n[*][B]ID - [/B]#" + banInfo.id.toString()
 						p = p + "\n[*][B]Reason - [/B]" + banInfo.reason
 
-						if (banInfo.length == 0) {
+						if (banInfo.length === 0) {
 							p = p + "\n[*][B]Expiry - [/B] Permanent"
 						}
 						else {
 							p = p + "\n[*][B]Expiry - [/B]" + unbanDate.toString()
 						}
+						// xenforoURL + forums + thread + post
+						p = p + "\n[*][B]User - [/B][URL=" + xenforoURL + "/index.php?t=user&id=" + steamid + "']" + steamid + "[/URL]"
 
-						p = p + "\n[*][B]User - [/B][URL='https://panel.impulse-community.com/index.php?t=user&id=" + steamid + "']" + steamid + "[/URL]"
-
-						if (gotIt == true) {
+						if (gotIt === true) {
 							p = p + "\n[*][B]Moderator - [/B][USER=" + adminUID + "]" + banInfo.steamid64_admin + "[/USER]"
 						}
 						else {
-							if (banInfo.steamid64_admin != "0") {
+							if (banInfo.steamid64_admin !== "0") {
 								p = p + "\n[*][B]Moderator - [/B]" + banInfo.steamid64_admin
 							}
-							else if (banInfo.reason.toLowerCase().includes("iac")) {
-								isIAC = true
-							}
 						}
 
-						p = p + "\n[/LIST]"
-
-						if (isIAC == true) {
-							p = p + `\n\n[TABLE]
-							[TR]
-							[TD][B][SIZE=5][COLOR=rgb(226, 80, 65)]This ban was issued by IAC (impulse anti-cheat)
-							IAC bans are permanent, non-negotiable and cannot be removed by appeal.[/COLOR][/SIZE][/B]
-							[SIZE=3]If your IAC ban is determined to have been issued incorrectly, it will automatically be removed.[/SIZE]
-							
-							
-							[B]How does IAC work?:[/B]
-							IAC is an evidence based anti-cheat. It only issues bans when a cheat is detected directly. This means IAC does not conduct analysis, and does not issue false bans unless it is the result of a bug. In those cases the bans are automatically removed. For security purposes the exact methods IAC uses can not be disclosed, however IAC will scan actively for known traces of known cheats. IAC is non-intrusive and does not interfere, or be interfered with by other addons or other programs. Every IAC ban stores a case file containing evidence regarding your ban.
-							
-							[B]Are all IAC punishments permanent?:[/B]
-							One of IAC's many detection methods which is used to prevent server crash exploits can flag false-positives. For this reason, this method will just kick users from the session unless it detects a very high reading. All other methods are completely based on evidence and can not be triggered by accident at all, therefore they all issue full IAC bans when they are triggered.[/TD]
-							[/TR]
-							[/TABLE]`
-						}
+						let p = p + "\n[/LIST]"
 						p = escape(p)
 
-						forum.updateThread({id: threadid, prefix_id: "7", title: title + " - " + steamid, discussion_open: !isIAC}, "", function() {})
+						forum.updateThread({id: threadid, prefix_id: "7", title: title + " - " + steamid}, function() {})
 						forum.postMessage({thread_id: threadid, message: p}, "", function() {})
 					})
 				})
@@ -216,7 +198,7 @@ function setThreadData(threadid, value) {
 const snooze = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const main = async () => {
-	if ((forumDb === undefined || panelDb === undefined) || (forumDb.state == "disconnected" & panelDb.state == "disconnected")) {
+	if ((forumDb === undefined || panelDb === undefined) || (forumDb.state === "disconnected" & panelDb.state === "disconnected")) {
 		console.log("Trying to connect to the databases...")
 		dbConnect()
 		await snooze(5000)
@@ -226,7 +208,7 @@ const main = async () => {
 	} 
 
 	await snooze(5000)
-	main()
+	await main()
 };
 
-main()
+main().then(() => console.log("Done!"));

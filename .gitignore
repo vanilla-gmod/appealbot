@@ -116,4 +116,4 @@ dist
 .pnp.*
 
 auth.json
-package-lock.json
+.idea
