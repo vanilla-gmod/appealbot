@@ -87,7 +87,7 @@ function dbConnect() {
 }
 
 function getBanAppeals() {
-  forum.getForum({ id: 10 }, '', function (error, message, body) {
+  forum.getForum({ id: 10 }, '', function (body) {
     body.threads.forEach(function (val) {
       if ((val.prefix_id === 0) & val.title.toLowerCase().includes('ban appeal') && appealCache.includes(val.thread_id) === false) {
         appealCache.push(val.thread_id);
@@ -97,12 +97,12 @@ function getBanAppeals() {
   });
 }
 
-function checkBanAppeal(title, threadid, data, userid) {
+function checkBanAppeal(title, threadid, userid) {
   getUserSteamID(userid, function (steamid) {
     getBanOnUser(steamid, function (banInfo) {
       getForumUserBySteamID(banInfo.steamid64_admin, function (gotIt, adminUID) {
-        forum.getThread({ id: threadid }, '', function (z, x, c) {
-          forum.getMessage({ id: c.thread.first_post_id }, '', function (error, msg, body) {
+        forum.getThread({ id: threadid }, '', function (c) {
+          forum.getMessage({ id: c.thread.first_post_id }, '', function (body) {
             if (body.post.message.toLowerCase().includes('[b]are you appealing an expired ban or a warning?:[/b] yes')) {
               return;
             }
