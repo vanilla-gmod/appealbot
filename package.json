@@ -1,5 +1,5 @@
 {
-  "name": "Appeals Supervisor Bot",
+  "name": "xenforobanappealsbot",
   "version": "1.0.0",
   "description": "epic",
   "main": "bot.js",
@@ -8,5 +8,8 @@
   "dependencies": {
     "api-wrapper": "^1.1.0",
     "mysql": "^2.18.1"
+  },
+  "scripts": {
+    "prettify": "prettier . --write"
   }
 }
