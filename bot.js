@@ -37,7 +37,7 @@ function dbConnect() {
   });
 
   let panelDb = mysql.createConnection({
-    host: auth.db_ip,
+    host: auth.panel_ip,
     user: auth.panel_user,
     password: auth.panel_pass,
     database: auth.panel_db,
