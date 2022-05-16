@@ -6,21 +6,20 @@ this is a specific case use, and is pretty messy because i put it together quick
 
 Instructions:
 
-1. Create an auth.json file.
-2. Add following fields to the auth.json file:
+1. Create a .env file.
+2. Add following fields to the .env file:
 
 ```
-{
-    "xf_token": "",
-    "db_ip": "",
-    "db_forum_user": "",
-    "db_forum_pass": "",
-    "db_forum_db": "",
-    "panel_ip": "",
-    "panel_user": "",
-    "panel_pass": "",
-    "panel_db": "",
-}
+XF_URL=""
+XF_API_KEY=""
+XF_DB_HOST=""
+XF_DB_USER=""
+XF_DB_PASS=""
+XF_DB_NAME=""
+PANEL_DB_HOST=""
+PANEL_DB_USER=""
+PANEL_DB_PASS=""
+PANEL_DB_NAME=""
 ```
 
 3. Run the bot.js script. `node bot.js`

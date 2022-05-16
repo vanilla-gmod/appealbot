@@ -1,14 +1,12 @@
-// this code was just put together quickly and is pretty messy, you've been warned
-
+require('dotenv').config();
 wrapper = require('api-wrapper');
 mysql = require('mysql');
-auth = require('./auth.json');
 
 forum = wrapper.create({
-  root: auth.xf_url + '/api/',
+  root: process.env.XF_URL + '/api/',
   parseJson: true,
   requestDefaults: {
-    headers: { 'XF-Api-Key': auth.xf_token },
+    headers: { 'XF-Api-Key': process.env.XF_API_KEY },
   },
   get: {
     getThreads: 'threads/',
@@ -30,17 +28,17 @@ appealCache = [];
 
 function dbConnect() {
   let forumDb = mysql.createConnection({
-    host: auth.db_ip,
-    user: auth.forum_user,
-    password: auth.forum_pass,
-    database: auth.forum_db,
+    host: process.env.XF_DB_HOST,
+    user: process.env.XF_DB_USER,
+    password: process.env.XF_DB_PASS,
+    database: process.env.XF_DB_NAME,
   });
 
   let panelDb = mysql.createConnection({
-    host: auth.panel_ip,
-    user: auth.panel_user,
-    password: auth.panel_pass,
-    database: auth.panel_db,
+    host: process.env.PANEL_DB_HOST,
+    user: process.env.PANEL_DB_USER,
+    password: process.env.PANEL_DB_PASS,
+    database: process.env.PANEL_DB_NAME,
   });
 
   forumDb.connect(function (err) {
