@@ -85,7 +85,7 @@ function dbConnect() {
 }
 
 function getBanAppeals() {
-  forum.getForum({ id: 10 }, '', function (body) {
+  forum.getForum({ id: process.env.FORUM_NODE_ID }, '', function (body) {
     body.threads.forEach(function (val) {
       if ((val.prefix_id === 0) & val.title.toLowerCase().includes('ban appeal') && appealCache.includes(val.thread_id) === false) {
         appealCache.push(val.thread_id);

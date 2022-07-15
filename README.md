@@ -20,6 +20,7 @@ PANEL_DB_HOST=""
 PANEL_DB_USER=""
 PANEL_DB_PASS=""
 PANEL_DB_NAME=""
+FORUM_NODE_ID=""
 ```
 
 3. Run the bot.js script. `node bot.js`
