@@ -100,45 +100,44 @@ function checkBanAppeal(title, threadid, _data, userid) {
   getUserSteamID(userid, function (steamid) {
     getBanOnUser(steamid, function (banInfo) {
       getForumUserBySteamID(banInfo.steamid64_admin, function (gotIt, adminUID) {
-        forum.getThread({ id: threadid }, '', function (_z, _x, c) {
-          forum.getMessage({ id: c.thread.first_post_id }, '', function (_error, _msg, body) {
+        console.log('Found new appeal from ' + steamid + ' (' + userid + ') for ban #' + banInfo.id);
 
-            console.log('Found new appeal from ' + steamid + ' (' + userid + ') for ban #' + banInfo.id);
+        const unbanDate = new Date(banInfo.date_banned.getTime() + 60 * (1000 * banInfo.length));
 
-            const unbanDate = new Date(banInfo.date_banned.getTime() + 60 * (1000 * banInfo.length));
+        let p = '[B]Ban Information[/B]\n[LIST]';
+        p = p + '\n[*][B]ID - [/B]#' + banInfo.id.toString();
+        p = p + '\n[*][B]Reason - [/B]' + banInfo.reason;
 
-            let p = '[B]Ban Information[/B]\n[LIST]';
-            p = p + '\n[*][B]ID - [/B]#' + banInfo.id.toString();
-            p = p + '\n[*][B]Reason - [/B]' + banInfo.reason;
+        if (banInfo.length === 0) {
+          p = p + '\n[*][B]Expiry - [/B] Permanent';
+        } else {
+          p = p + '\n[*][B]Expiry - [/B]' + unbanDate.toString();
+        }
 
-            if (banInfo.length === 0) {
-              p = p + '\n[*][B]Expiry - [/B] Permanent';
-            } else {
-              p = p + '\n[*][B]Expiry - [/B]' + unbanDate.toString();
-            }
+        p = p + '\n[*][B]User - [/B][URL=' + process.env.GEXTENSION_PANEL_URL + '/index.php?t=user&id=' + steamid + ']' + steamid + '[/URL]';
 
-            p = p + '\n[*][B]User - [/B][URL=' + process.env.GEXTENSION_PANEL_URL + '/index.php?t=user&id=' + steamid + ']' + steamid + '[/URL]';
+        if (gotIt === true) {
+          p = p + '\n[*][B]Moderator - [/B][USER=' + adminUID + ']' + banInfo.steamid64_admin + '[/USER]';
+        } else {
+          if (banInfo.steamid64_admin !== '0') {
+            p = p + '\n[*][B]Moderator - [/B]' + banInfo.steamid64_admin;
+          }
+        }
 
-            if (gotIt === true) {
-              p = p + '\n[*][B]Moderator - [/B][USER=' + adminUID + ']' + banInfo.steamid64_admin + '[/USER]';
-            } else {
-              if (banInfo.steamid64_admin !== '0') {
-                p = p + '\n[*][B]Moderator - [/B]' + banInfo.steamid64_admin;
-              }
-            }
+        p = p + '\n[/LIST]';
+        p = escape(p);
 
-            p = p + '\n[/LIST]';
-            p = escape(p);
-            
-            // If the thread title already has steamid in it, don't post it again nor update the thread
-            if (title.toLowerCase().includes(steamid.toLowerCase())) {
-              console.log('[BANAPPEAL] Thread already contains steamid, skipping');
-            } else {
-            forum.updateThread({ id: threadid, prefix_id: process.env.FORUM_PREFIX, title: title + ' - ' + steamid }, '', function () { console.log('[BANAPPEAL] Updated thread title'); });
-            forum.postMessage({ thread_id: threadid, message: p }, '', function () { console.log('[BANAPPEAL] Posted message to ban appeal'); });
-            }
+        // If the thread title already has steamid in it, don't post it again nor update the thread
+        if (title.toLowerCase().includes(steamid.toLowerCase())) {
+          console.log('[BANAPPEAL] Thread already contains steamid, skipping');
+        } else {
+          forum.updateThread({ id: threadid, prefix_id: process.env.FORUM_PREFIX, title: title + ' - ' + steamid }, '', function () {
+            console.log('[BANAPPEAL] Updated thread title');
           });
-        });
+          forum.postMessage({ thread_id: threadid, message: p }, '', function () {
+            console.log('[BANAPPEAL] Posted message to ban appeal');
+          });
+        }
       });
     });
   });
