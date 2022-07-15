@@ -85,8 +85,8 @@ function dbConnect() {
 }
 
 function getBanAppeals() {
-// Get forum and put the json in a variable
- result = forum.getForum({ id: process.env.FORUM_NODE_ID }, '', function (error, message, body) {
+  // Get forum and put the json in a variable
+  result = forum.getForum({ id: process.env.FORUM_NODE_ID }, '', function (error, message, body) {
     body.threads.forEach(function (val) {
       if ((val.prefix_id === 0) & val.title.toLowerCase().includes('ban appeal') && appealCache.includes(val.thread_id) === false) {
         appealCache.push(val.thread_id);
@@ -97,53 +97,50 @@ function getBanAppeals() {
 }
 
 function checkBanAppeal(title, threadid, data, userid) {
-	getUserSteamID(userid, function(steamid) {
-		getBanOnUser(steamid, function(banInfo) {
-			getForumUserBySteamID(banInfo.steamid64_admin, function(gotIt, adminUID) {
-				forum.getThread({id: threadid}, "", function(z, x, c) {
-					forum.getMessage({id: c.thread.first_post_id}, "", function(error, msg, body) {
-						if (body.post.message.toLowerCase().includes("[b]are you appealing an expired ban or a warning?:[/b] yes")) {
-							return
-						}
+  getUserSteamID(userid, function (steamid) {
+    getBanOnUser(steamid, function (banInfo) {
+      getForumUserBySteamID(banInfo.steamid64_admin, function (gotIt, adminUID) {
+        forum.getThread({ id: threadid }, '', function (z, x, c) {
+          forum.getMessage({ id: c.thread.first_post_id }, '', function (error, msg, body) {
+            if (body.post.message.toLowerCase().includes('[b]are you appealing an expired ban or a warning?:[/b] yes')) {
+              return;
+            }
 
-						console.log("Found new appeal from "+steamid+" ("+userid+") for ban #"+banInfo.id)
+            console.log('Found new appeal from ' + steamid + ' (' + userid + ') for ban #' + banInfo.id);
 
-						var unbanDate = new Date(banInfo.date_banned.getTime() + (60 * (1000 * banInfo.length)))
+            var unbanDate = new Date(banInfo.date_banned.getTime() + 60 * (1000 * banInfo.length));
 
-						p = "[B]Ban Information[/B]\n[LIST]"
-						p = p + "\n[*][B]ID - [/B]#" + banInfo.id.toString()
-						p = p + "\n[*][B]Reason - [/B]" + banInfo.reason
+            p = '[B]Ban Information[/B]\n[LIST]';
+            p = p + '\n[*][B]ID - [/B]#' + banInfo.id.toString();
+            p = p + '\n[*][B]Reason - [/B]' + banInfo.reason;
 
-						if (banInfo.length == 0) {
-							p = p + "\n[*][B]Expiry - [/B] Permanent"
-						}
-						else {
-							p = p + "\n[*][B]Expiry - [/B]" + unbanDate.toString()
-						}
+            if (banInfo.length == 0) {
+              p = p + '\n[*][B]Expiry - [/B] Permanent';
+            } else {
+              p = p + '\n[*][B]Expiry - [/B]' + unbanDate.toString();
+            }
 
-						p = p + "\n[*][B]User - [/B][URL=" + process.env.GEXTENSION_PANEL_URL + "/index.php?t=user&id=" + steamid + "]" + steamid + "[/URL]"
+            p = p + '\n[*][B]User - [/B][URL=' + process.env.GEXTENSION_PANEL_URL + '/index.php?t=user&id=' + steamid + ']' + steamid + '[/URL]';
 
-						if (gotIt == true) {
-							p = p + "\n[*][B]Moderator - [/B][USER=" + adminUID + "]" + banInfo.steamid64_admin + "[/USER]"
-						}
-						else {
-							if (banInfo.steamid64_admin != "0") {
-								p = p + "\n[*][B]Moderator - [/B]" + banInfo.steamid64_admin
-							}
-						}
+            if (gotIt == true) {
+              p = p + '\n[*][B]Moderator - [/B][USER=' + adminUID + ']' + banInfo.steamid64_admin + '[/USER]';
+            } else {
+              if (banInfo.steamid64_admin != '0') {
+                p = p + '\n[*][B]Moderator - [/B]' + banInfo.steamid64_admin;
+              }
+            }
 
-						p = p + "\n[/LIST]"
-						p = escape(p)
+            p = p + '\n[/LIST]';
+            p = escape(p);
 
-						forum.updateThread({id: threadid, prefix_id: process.env.FORUM_PREFIX, title: title + " - " + steamid}, "", function() {})
-						forum.postMessage({thread_id: threadid, message: p}, "", function() {})
-					})
-				})
-			})
-		})
-	})
+            forum.updateThread({ id: threadid, prefix_id: process.env.FORUM_PREFIX, title: title + ' - ' + steamid }, '', function () {});
+            forum.postMessage({ thread_id: threadid, message: p }, '', function () {});
+          });
+        });
+      });
+    });
+  });
 }
-
 
 function getUserSteamID(userid, callback) {
   forumDb.query("SELECT provider_key FROM xf_user_connected_account WHERE provider = 'steam' AND user_id = '" + userid + "'", function (err, result) {
