@@ -27,14 +27,14 @@ panelDb = undefined;
 appealCache = [];
 
 function dbConnect() {
-  let forumDb = mysql.createConnection({
+  forumDb = mysql.createConnection({
     host: process.env.XF_DB_HOST,
     user: process.env.XF_DB_USER,
     password: process.env.XF_DB_PASS,
     database: process.env.XF_DB_NAME,
   });
 
-  let panelDb = mysql.createConnection({
+  panelDb = mysql.createConnection({
     host: process.env.PANEL_DB_HOST,
     user: process.env.PANEL_DB_USER,
     password: process.env.PANEL_DB_PASS,
