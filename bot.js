@@ -1,6 +1,6 @@
 require('dotenv').config();
-wrapper = require('api-wrapper');
-mysql = require('mysql');
+const wrapper = require('api-wrapper');
+const mysql = require('mysql');
 
 forum = wrapper.create({
   root: process.env.XF_URL + '/api/',
@@ -88,7 +88,7 @@ function getBanAppeals() {
   // Get forum and put the json in a variable
   forum.getForum({ id: process.env.FORUM_NODE_ID }, '', function (error, message, body) {
     body.threads.forEach(function (val) {
-      if ((val.prefix_id === 0) & val.title.toLowerCase().includes('ban appeal') && appealCache.includes(val.thread_id) === false) {
+      if ((val.prefix_id === 0) & val.title.toLowerCase().includes('appeal') && appealCache.includes(val.thread_id) === false) {
         appealCache.push(val.thread_id);
         checkBanAppeal(val.title, val.thread_id, val.custom_fields, val.user_id);
       }
