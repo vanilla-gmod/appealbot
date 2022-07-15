@@ -121,7 +121,7 @@ function checkBanAppeal(title, threadid, data, userid) {
 							p = p + "\n[*][B]Expiry - [/B]" + unbanDate.toString()
 						}
 
-						p = p + "\n[*][B]User - [/B][URL='https://web.willard.network/index.php?t=user&id=" + steamid + "']" + steamid + "[/URL]"
+						p = p + "\n[*][B]User - [/B][URL=" + process.env.GEXTENSION_PANEL_URL + "/index.php?t=user&id=" + steamid + "]" + steamid + "[/URL]"
 
 						if (gotIt == true) {
 							p = p + "\n[*][B]Moderator - [/B][USER=" + adminUID + "]" + banInfo.steamid64_admin + "[/USER]"
