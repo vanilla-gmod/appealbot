@@ -132,9 +132,15 @@ function checkBanAppeal(title, threadid, data, userid) {
 
             p = p + '\n[/LIST]';
             p = escape(p);
-
+            
+            // If the thread title already has steamid in it, don't post it again nor update the thread
+            if (title.toLowerCase().includes(steamid.toLowerCase())) {
+              console.log('[BANAPPEAL] Thread already contains steamid, skipping');
+              return;
+            } else {
             forum.updateThread({ id: threadid, prefix_id: process.env.FORUM_PREFIX, title: title + ' - ' + steamid }, '', function () {});
             forum.postMessage({ thread_id: threadid, message: p }, '', function () {});
+            }
           });
         });
       });
