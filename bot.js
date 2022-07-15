@@ -12,7 +12,7 @@ forum = wrapper.create({
     getThreads: 'threads/',
     getThread: 'threads/${id}/',
     getUser: 'users/${id}/',
-    getForum: 'forums/${id}/threads/',
+    getForum: 'forums/wn/${id}/threads/',
     getMessage: 'posts/${id}/',
   },
   post: {
