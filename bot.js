@@ -86,7 +86,7 @@ function dbConnect() {
 
 function getBanAppeals() {
   // Get forum and put the json in a variable
-  forum.getForum({ id: process.env.FORUM_NODE_ID }, '', function (error, message, body) {
+  forum.getForum({ id: process.env.FORUM_NODE_ID }, '', function (_error, _message, body) {
     body.threads.forEach(function (val) {
       if ((val.prefix_id === 0) & val.title.toLowerCase().includes('appeal') && appealCache.includes(val.thread_id) === false) {
         appealCache.push(val.thread_id);
@@ -100,7 +100,7 @@ function checkBanAppeal(title, threadid, data, userid) {
   getUserSteamID(userid, function (steamid) {
     getBanOnUser(steamid, function (banInfo) {
       getForumUserBySteamID(banInfo.steamid64_admin, function (gotIt, adminUID) {
-        forum.getThread({ id: threadid }, '', function (z, x, c) {
+        forum.getThread({ id: threadid }, '', function (_z, _x, c) {
           forum.getMessage({ id: c.thread.first_post_id }, '', function (error, msg, body) {
             if (body.post.message.toLowerCase().includes('[b]are you appealing an expired ban or a warning?:[/b] yes')) {
               return;
@@ -136,10 +136,9 @@ function checkBanAppeal(title, threadid, data, userid) {
             // If the thread title already has steamid in it, don't post it again nor update the thread
             if (title.toLowerCase().includes(steamid.toLowerCase())) {
               console.log('[BANAPPEAL] Thread already contains steamid, skipping');
-              return;
             } else {
-            forum.updateThread({ id: threadid, prefix_id: process.env.FORUM_PREFIX, title: title + ' - ' + steamid }, '', function () {});
-            forum.postMessage({ thread_id: threadid, message: p }, '', function () {});
+            forum.updateThread({ id: threadid, prefix_id: process.env.FORUM_PREFIX, title: title + ' - ' + steamid }, '', function () { console.log('[BANAPPEAL] Updated thread title'); });
+            forum.postMessage({ thread_id: threadid, message: p }, '', function () { console.log('[BANAPPEAL] Posted message to ban appeal'); });
             }
           });
         });
@@ -183,14 +182,6 @@ function getBanOnUser(steamid, callback) {
       }
     }
   );
-}
-
-function threadSetTitle(threadid, xTitle) {
-  forum.updateThread({ id: threadid, title: xTitle }, function () {});
-}
-
-function setThreadData(threadid, value) {
-  forum.updateThread({ id: threadid, custom_fields: value }, function () {});
 }
 
 const snooze = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
