@@ -1,10 +1,10 @@
-# Willard Networks Xenforo Appeal bot
+# vanilla Xenforo Appeal Bot
 
-a simple bot that helps to manage ban appeals on https://willard.network forum
+A simple bot that helps to manage ban appeals on https://vanilla-community.com
 
-this is a specific case use, which uses both Xenforo and GExtension of Garry's Mod
+This is a specific case use, which uses both Xenforo and GExtension of Garry's Mod
 
-Originally made by [Vin](https://github.com/vingard/), and now maintained by [Votton](https://github.com/VottonDev)
+Originally made by [vin](https://github.com/vingard/), now maintained by [Votton](https://github.com/VottonDev), and edited by vanilla Development Team
 
 Instructions:
 
