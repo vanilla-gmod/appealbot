@@ -70,6 +70,7 @@ function dbConnect() {
       panelDb.end();
       console.log('[MYSQL] Closed old gextension database connection.');
       dbConnect();
+      console.log('[MYSQL] Reconnected to databases.');
     } else {
       throw err;
     }
