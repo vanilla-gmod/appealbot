@@ -44,7 +44,7 @@ function dbConnect() {
   forumDb.connect(function (err) {
     if (err) {
       console.log('[MYSQL] ' + err);
-      //setTimeout(dbConnect, 2000)
+      // setTimeout(dbConnect, 2000)
     } else {
       console.log('[MYSQL] Connected to forum database!');
     }
@@ -53,7 +53,7 @@ function dbConnect() {
   panelDb.connect(function (err) {
     if (err) {
       console.log('[MYSQL] ' + err);
-      //setTimeout(dbConnect, 2000)
+      // setTimeout(dbConnect, 2000)
     } else {
       console.log('[MYSQL] Connected to panel database!');
     }
@@ -127,13 +127,22 @@ function checkBanAppeal(title, threadid, _data, userid) {
         p = p + '\n[/LIST]';
         p = escape(p);
 
-        // If the thread title already has steamid in it, don't post it again nor update the thread
+        // If the thread title already has steamid in it, don't post it again
+        // nor update the thread
         if (title.toLowerCase().includes(steamid.toLowerCase())) {
           console.log('[BANAPPEAL] Thread already contains steamid, skipping');
         } else {
-          forum.updateThread({ id: threadid, prefix_id: process.env.FORUM_PREFIX, title: title + ' - ' + steamid }, '', function () {
-            console.log('[BANAPPEAL] Updated thread title');
-          });
+          forum.updateThread(
+            {
+              id: threadid,
+              prefix_id: process.env.FORUM_PREFIX,
+              title: title + ' - ' + steamid,
+            },
+            '',
+            function () {
+              console.log('[BANAPPEAL] Updated thread title');
+            }
+          );
           forum.postMessage({ thread_id: threadid, message: p }, '', function () {
             console.log('[BANAPPEAL] Posted message to ban appeal');
           });
