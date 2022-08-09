@@ -185,6 +185,13 @@ const snooze = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const main = async () => {
   if (forumDb === undefined || panelDb === undefined || (forumDb.state === 'disconnected') & (panelDb.state === 'disconnected')) {
     console.log('Trying to connect to the databases...');
+    // Close the old connection if it's open
+    if (forumDb !== undefined) {
+      forumDb.end();
+    }
+    if (panelDb !== undefined) {
+      panelDb.end();
+    }
     dbConnect();
     await snooze(5000);
   } else {
