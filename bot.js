@@ -195,14 +195,10 @@ const main = async () => {
   if (forumDb === undefined || panelDb === undefined || (forumDb.state === 'disconnected') & (panelDb.state === 'disconnected')) {
     console.log('Trying to connect to the databases...');
     // Close the old connection if it's open
-    if (forumDb !== undefined) {
-      forumDb.end();
-      console.log('[MYSQL] Closed old connection');
-    }
-    if (panelDb !== undefined) {
-      panelDb.end();
-      console.log('[MYSQL] Closed old connection');
-    }
+    forumDb.end();
+    console.log('[MYSQL] Closed old forum connection');
+    panelDb.end();
+    console.log('[MYSQL] Closed old gextension connection');
     dbConnect();
     await snooze(5000);
   } else {
