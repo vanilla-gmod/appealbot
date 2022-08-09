@@ -197,9 +197,11 @@ const main = async () => {
     // Close the old connection if it's open
     if (forumDb !== undefined) {
       forumDb.end();
+      console.log('[MYSQL] Closed old connection');
     }
     if (panelDb !== undefined) {
       panelDb.end();
+      console.log('[MYSQL] Closed old connection');
     }
     dbConnect();
     await snooze(5000);
