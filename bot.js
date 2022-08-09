@@ -67,7 +67,7 @@ function dbConnect() {
       console.log('[MYSQL] Reconnecting...');
       forumDb.end();
       console.log('[MYSQL] Closed old forum database connection.');
-      dbConnect();
+      setTimeout(dbConnect, 2000);
       console.log('[MYSQL] Reconnected to forum database.');
     } else {
       throw err;
@@ -82,7 +82,7 @@ function dbConnect() {
       console.log('[MYSQL] Reconnecting...');
       panelDb.end();
       console.log('[MYSQL] Closed old gextension database connection.');
-      dbConnect();
+      setTimeout(dbConnect, 2000);
       console.log('[MYSQL] Reconnected to gextension database.');
     } else {
       throw err;
