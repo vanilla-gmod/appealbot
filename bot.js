@@ -65,6 +65,10 @@ function dbConnect() {
 
     if (err.code === 'PROTOCOL_CONNECTION_LOST') {
       console.log('[MYSQL] Reconnecting...');
+      forumDb.end();
+      console.log('[MYSQL] Closed old forum database connection.');
+      panelDb.end();
+      console.log('[MYSQL] Closed old gextension database connection.');
       dbConnect();
     } else {
       throw err;
@@ -194,11 +198,6 @@ const snooze = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const main = async () => {
   if (forumDb === undefined || panelDb === undefined || (forumDb.state === 'disconnected') & (panelDb.state === 'disconnected')) {
     console.log('Trying to connect to the databases...');
-    // Close the old connection if it's open
-    forumDb.end();
-    console.log('[MYSQL] Closed old forum connection');
-    panelDb.end();
-    console.log('[MYSQL] Closed old gextension connection');
     dbConnect();
     await snooze(5000);
   } else {
