@@ -67,10 +67,8 @@ function dbConnect() {
       console.log('[MYSQL] Reconnecting...');
       forumDb.end();
       console.log('[MYSQL] Closed old forum database connection.');
-      panelDb.end();
-      console.log('[MYSQL] Closed old gextension database connection.');
       dbConnect();
-      console.log('[MYSQL] Reconnected to databases.');
+      console.log('[MYSQL] Reconnected to forum database.');
     } else {
       throw err;
     }
@@ -82,7 +80,10 @@ function dbConnect() {
 
     if (err.code === 'PROTOCOL_CONNECTION_LOST') {
       console.log('[MYSQL] Reconnecting...');
+      panelDb.end();
+      console.log('[MYSQL] Closed old gextension database connection.');
       dbConnect();
+      console.log('[MYSQL] Reconnected to gextension database.');
     } else {
       throw err;
     }
